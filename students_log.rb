@@ -5,10 +5,10 @@ class Student
 	attr_accessor :id, :name, :last_name, :age
 
 	def initialize(id, name, last_name, age)
-		@id = id
-		@name  = name.capitalize
+		@id				 = id
+		@name 		 = name.capitalize
 		@last_name = last_name.capitalize
-		@age = age.to_i
+		@age       = age.to_i
 	end
 
 	def filename
@@ -94,13 +94,18 @@ while proceed do
 	elsif input_choice == 'show'
 		print "Enter the student ID you would like to see: "
 		input_id = gets.chomp
-		puts "Student information:"
 		file = Dir["data/#{input_id}*.csv"][0]
-		puts '--------------------'
-		File.open(file, 'r') do |f|
-			pp f.readline
+		if file != nil
+			puts "Student information:"
+			puts '--------------------'
+			File.open(file, 'r') do |f|
+				pp f.readline
+			end
+			puts '--------------------'
+		else
+			puts "There is no student with ID #{input_id}."
 		end
-		puts '--------------------'
+
 
 	elsif input_choice == 'edit'
 		print "Enter the student ID you would like to edit: "
@@ -130,19 +135,24 @@ while proceed do
 		print "Enter the student ID you would like to delete: "
 		input_id = gets.chomp.to_i
 		file = Dir["data/#{input_id}*.csv"][0]
-		File.open(file, 'r') do |f|
-			pp f.readline
-		end
-		print "Enter 'y' if you if you realy want to delete the record\nor press any button: "
-		input_delete = gets.chomp.downcase
-		if input_delete == 'y'
-			File.delete(file)
-			puts '--------------------'
-			puts "Student record with ID #{input_id} deleted."
-			puts '--------------------'
+		if file != nil
+			File.open(file, 'r') do |f|
+				pp f.readline
+			end
+			print "Enter 'y' if you if you realy want to delete the record\nor press any button: "
+			input_delete = gets.chomp.downcase
+			if input_delete == 'y'
+				File.delete(file)
+				puts '--------------------'
+				puts "Student record with ID #{input_id} deleted."
+				puts '--------------------'
+			else
+				nil
+			end
 		else
-			nil
+			puts "No student with ID #{input_id} found."
 		end
+
 	else
 		puts "Please enter a valid option: "
 	end
