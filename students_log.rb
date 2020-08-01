@@ -1,22 +1,18 @@
-# Liko validacija; 'list' komandai rodyti failo turinį, o ne kelią
 require 'csv'
 require 'pp'
 
 class Student
 	attr_accessor :id, :name, :last_name, :age
+
 	def initialize(id, name, last_name, age)
-		@id				 = id
-		@name 		 = name.capitalize
+		@id = id
+		@name  = name.capitalize
 		@last_name = last_name.capitalize
-		@age       = age.to_i
+		@age = age.to_i
 	end
 
 	def filename
 		[id, name.downcase, last_name.downcase].join("-")
-	end
-
-	def editfile
-		Dir["data/#{input_id}*.csv"]
 	end
 
 	def save
@@ -30,6 +26,22 @@ class Student
 			csv << [id, name, last_name, age]
 		end
 	end
+end
+
+def validator(field_name, input)
+  while input.length == 0 do
+    print "#{field_name} can't be blank.\nPlease repeat student #{field_name.downcase}: "
+    input = gets.chomp
+  end
+  return input
+end
+
+def age_valid(field_name, input)
+	while input.length == 0 && input.to_i < 15 do
+		print "#{field_name} cant be blank and should be greater than 15.\nPlease repeat student #{field_name.downcase}: "
+		input = gets.chomp
+	end
+	return input
 end
 
 proceed = true
@@ -50,21 +62,24 @@ while proceed do
 
 	if input_choice == 'exit'
 		puts '--------------------'
-		puts "Program exited."
+		puts "Bye!"
 		proceed = false
 
 	elsif input_choice == 'new'
 		print "Enter student name: "
-		input_name = gets.chomp
+		get_name = gets.chomp
+		input_name = validator('Student name', get_name)
 		print "Enter student last name: "
-		input_last_name = gets.chomp
+		get_last = gets.chomp
+		input_last_name = validator('Last name', get_last)
 		print "Enter student age: "
-		input_age = gets.chomp
-		input_id = rand (1..1000)
+		get_age = gets.chomp
+		input_age = age_valid('Student age', get_age)
+		input_id = rand (1000..9999)
 		entry = Student.new(input_id, input_name, input_last_name, input_age)
 		entry.save
 		puts '--------------------'
-		puts "Student #{input_name.capitalize} #{input_last_name.capitalize} record created."
+		puts "Student #{input_name.capitalize} #{input_last_name.capitalize} record with ID #{input_id} created."
 		puts '--------------------'
 
 	elsif input_choice == 'list'
@@ -78,7 +93,7 @@ while proceed do
 
 	elsif input_choice == 'show'
 		print "Enter the student ID you would like to see: "
-		input_id = gets.chomp.to_i
+		input_id = gets.chomp
 		puts "Student information:"
 		file = Dir["data/#{input_id}*.csv"][0]
 		puts '--------------------'
@@ -97,11 +112,14 @@ while proceed do
 		end
 		File.delete(file)
 		print "Update student name: "
-		input_name = gets.chomp
+		get_name = gets.chomp
+		input_name = validator('Student name', get_name)
 		print "Update student last name: "
-		input_last_name = gets.chomp
+		get_last = gets.chomp
+		input_last_name = validator('Last name', get_last)
 		print "Update student age: "
-		input_age = gets.chomp
+		get_age = gets.chomp
+		input_age = age_valid('Student age', get_age)
 		entry = Student.new(input_id, input_name, input_last_name, input_age)
 		entry.save
 		puts '--------------------'
@@ -115,7 +133,7 @@ while proceed do
 		File.open(file, 'r') do |f|
 			pp f.readline
 		end
-		puts "Are you sure you want to delete this record? (y/n)"
+		print "Enter 'y' if you if you realy want to delete the record\nor press any button: "
 		input_delete = gets.chomp.downcase
 		if input_delete == 'y'
 			File.delete(file)
@@ -125,5 +143,8 @@ while proceed do
 		else
 			nil
 		end
+	else
+		puts "Please enter a valid option: "
 	end
+
 end
